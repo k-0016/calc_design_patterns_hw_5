@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from multiprocessing import Process
 
 class Command(ABC):
     @abstractmethod
@@ -12,7 +13,7 @@ class CommandHandler:
     def register_command(self, command_name: str, command: Command):
         self.commands[command_name] = command
 
-    def execute_command(self, command_name: str):
+    def execute_command(self, command_name: str, *args):
         """ Look before you leap (LBYL) - Use when its less likely to work
         if command_name in self.commands:
             self.commands[command_name].execute()
@@ -21,7 +22,11 @@ class CommandHandler:
         """
         """Easier to ask for forgiveness than permission (EAFP) - Use when its going to most likely work"""
         try:
-            self.commands[command_name].execute()
+            self.commands[command_name].execute(*args)
+            # command_process = Process(target=self.commands[command_name].execute, args=args)
+            # command_process.start()
+            # command_process.join()
         except KeyError:
             print(f"No such command: {command_name}")
-
+        except Exception as e:
+            print(f"Error executing command '{command_name}': {e}")

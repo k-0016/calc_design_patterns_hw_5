@@ -1,18 +1,14 @@
 import pytest
 from app import App
+from unittest.mock import Mock
 
-def test_app_start_exit_command(capfd, monkeypatch):
+def test_app_start_exit_command(monkeypatch):
     """Test that the REPL exits correctly on 'exit' command."""
-    # Simulate user entering 'exit'
-    monkeypatch.setattr('builtins.input', lambda _: 'exit')
+    input_mock = Mock(side_effect=['exit'])
+    monkeypatch.setattr('builtins.input', input_mock)
     app = App()
-    with pytest.raises(SystemExit) as e:
+    with pytest.raises(SystemExit):
         app.start()
-    assert e.type == SystemExit
-
-
-
-import pytest
 
 def test_app_start_unknown_command(capfd, monkeypatch):
     """Test how the REPL handles an unknown command before exiting."""
